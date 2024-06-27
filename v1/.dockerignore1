@@ -2,7 +2,5 @@
 .devspace/
 devspace_start.sh
 devspace.yaml
-Dockerfile
-Dockerfile.dev
 plugin.yaml
 README.yaml
