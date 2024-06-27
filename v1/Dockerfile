@@ -4,11 +4,14 @@ FROM golang:1.18 as builder
 # Make sure we use go modules
 WORKDIR vcluster
 
-# Copy the Go Modules manifests
-COPY . .
+COPY go.mod .
+COPY go.sum .
 
 # Install dependencies
 RUN go mod vendor
+
+# Copy the Go Modules manifests
+COPY . .
 
 # Build cmd
 RUN CGO_ENABLED=0 GO111MODULE=on go build -mod vendor -o /plugin main.go
