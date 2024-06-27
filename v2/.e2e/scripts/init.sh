@@ -8,7 +8,7 @@ RESOURCES_FILE=$MYDIR/../../../.e2e/vcluster-resources.yaml
 
 kubectl apply -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.70.0/example/prometheus-operator-crd-full/monitoring.coreos.com_podmonitors.yaml
 kubectl apply -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.70.0/example/prometheus-operator-crd-full/monitoring.coreos.com_servicemonitors.yaml
-helm upgrade --install --repo https://charts.loft.sh vcluster vcluster --version 0.16.4 --values $MYDIR/vcluster-values.yaml --values $ROOT_DIR/plugin.yaml --set plugin.prometheus-operator-resources.image=$PLUGIN_IMAGE --wait
+helm upgrade --install --repo https://charts.loft.sh vcluster vcluster --version v0.20.0-beta.5 --values $MYDIR/vcluster-values.yaml --values $ROOT_DIR/plugin.yaml --set plugins.prometheus-operator-resources.image=$PLUGIN_IMAGE --wait
 
 vcluster connect vcluster -n default -- kubectl get servicemonitor && vcluster connect vcluster -n default -- kubectl get podmonitor
 

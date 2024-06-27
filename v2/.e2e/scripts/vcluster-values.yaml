@@ -1,0 +1,17 @@
+controlPlane:
+  advanced:
+    serviceAccount:
+      enabled: false
+      name: default
+  statefulSet:
+    probes:
+      livenessProbe:
+        enabled: false
+      readinessProbe:
+        enabled: false
+  distro:
+    k3s:
+      enabled: true
+rbac:
+  clusterRole:
+    enabled: true

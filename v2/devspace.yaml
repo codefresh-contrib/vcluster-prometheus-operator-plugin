@@ -25,10 +25,6 @@ deployments:
         repo: https://charts.loft.sh
         version: v0.20.0-beta.5
       values:
-        experimental:
-          syncSettings:
-            syncLabels:
-            - app
         controlPlane:
           advanced:
             serviceAccount:
