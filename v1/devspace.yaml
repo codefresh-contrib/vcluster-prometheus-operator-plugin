@@ -1,0 +1,71 @@
+version: v2beta1
+name: vcluster-prom-operator-plugin
+
+vars:
+  PLUGIN_IMAGE: ilmedcodefreh/vcluster-prom-operator-plugin
+  # - name: K3S_IMAGE
+  #   value: rancher/k3s:v1.23.1-k3s1
+  # - name: SERVICE_CIDR
+  #   command: vcluster get service-cidr
+images:
+  vcluster:
+    image: ${PLUGIN_IMAGE}
+    dockerfile: ./Dockerfile.dev
+    rebuildStrategy: ignoreContextChanges
+# hooks:
+#   - name: Install Dependencies & Car Manifests
+#     events: ["after:deploy"]
+#     command: |-
+#       # Install dependencies
+#       if [ ! -d "vendor" ]; then
+#         echo "Executing 'go mod vendor'..."
+#         go mod vendor
+#       fi
+
+#       # Install car crd
+#       kubectl apply -f manifests/crds.yaml
+deployments:
+  prometheus-operator:
+    helm:
+      chart:
+        name: kube-prometheus-stack
+        repo: https://prometheus-community.github.io/helm-charts
+        version: 60.2.0
+  vcluster:
+    helm:
+      chart:
+        name: vcluster
+        repo: https://charts.loft.sh
+        version: 0.16.4
+      valuesFiles:
+        - plugin.yaml
+      values:
+        plugin:
+          prometheus-operator-resources:
+            image: ${PLUGIN_IMAGE}
+        #serviceCIDR: ${SERVICE_CIDR}
+        serviceAccount:
+          create: false
+          name: default
+        #vcluster:
+          #image: ${K3S_IMAGE}
+        rbac:
+          clusterRole:
+            create: true
+          role:
+            extended: true
+        syncer:
+          readinessProbe:
+            enabled: false
+          livenessProbe:
+            enabled: false
+dev:
+  plugin:
+    imageSelector: ${PLUGIN_IMAGE}
+    #command: ["./devspace_start.sh"]
+    ports:
+      - port: "2346:2345"
+    sync:
+    - path: ./:/plugin
+    terminal:
+      command: "./devspace_start.sh"

@@ -1,0 +1,16 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: sm-with-ns-selector
+  labels:
+    team: frontend
+spec:
+  namespaceSelector:
+    any: false
+    matchNames:
+    - my-virtual-namespace
+  selector:
+    matchLabels:
+      app: example-app
+  endpoints:
+  - port: web
