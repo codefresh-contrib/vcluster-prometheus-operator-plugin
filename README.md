@@ -1,0 +1,1 @@
+# vcluster-prometheus-operator-plugin
