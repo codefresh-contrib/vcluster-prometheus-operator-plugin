@@ -46,3 +46,16 @@ spec:
   selector:
     matchLabels:
       app: example-app
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: pm-without-ns-selector
+  namespace: default
+  labels:
+    team: frontend
+spec:
+  namespaceSelector: {}
+  selector:
+    matchLabels:
+      app: example-app
