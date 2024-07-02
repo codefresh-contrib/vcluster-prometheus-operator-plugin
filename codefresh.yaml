@@ -1,0 +1,146 @@
+# More examples of Codefresh YAML can be found at
+# https://codefresh.io/docs/docs/yaml-examples/examples/
+
+version: "1.0"
+mode: parallel
+# Stages can help you organize your steps in stages
+stages:
+  - "clone"
+  - "build"
+  - "test"
+
+steps:
+  clone:
+    title: "Cloning repository"
+    type: "git-clone"
+    repo: "codefresh-contrib/vcluster-prometheus-operator-plugin"
+    revision: "${{CF_BRANCH}}"
+    git: "codefresh-git-integration-contrib"
+    stage: "clone"
+
+  export_image_tag:
+    title: "Export image tag"
+    type: freestyle
+    stage: build
+    image: alpine
+    commands:
+    - |
+      export isRelease="${{RELEASE}}"
+      if [[ "$isRelease" == "true" ]]; then
+        export IMAGE_TAG="${{CF_RELEASE_TAG}}"
+      else
+        export IMAGE_TAG="${{CF_BRANCH_TAG_NORMALIZED_LOWER_CASE}}"
+      fi
+
+      cf_export IMAGE_TAG
+
+
+  build_v1:
+    title: "Build v1"
+    type: build
+    stage: "build"
+    working_directory: '${{clone}}/v1'
+    build_arguments:
+    - BUILDKIT_INLINE_CACHE=1
+    image_name: "${{CF_REPO_NAME}}"
+    tag: "v1-${{IMAGE_TAG}}"
+    registry: "ghcr-codefresh-contrib"
+    platform: 'linux/amd64,linux/arm64'
+    buildx:
+      builder:
+        driver_opts: "image=moby/buildkit:v0.14.1"
+    cache_from:
+    - ghcr.io/${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}:v1-${{CF_BRANCH_TAG_NORMALIZED_LOWER_CASE}}
+    - ghcr.io/${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}:v1-main
+    when:
+      steps:
+      - name: clone
+        on:
+        - success
+      - name: export_image_tag
+        on:
+        - success
+
+  build_v2:
+      title: "Build v2"
+      type: build
+      stage: "build"
+      build_arguments:
+      - BUILDKIT_INLINE_CACHE=1
+      working_directory: '${{clone}}/v2'
+      image_name: "${{CF_REPO_NAME}}"
+      tag: "v2-${{IMAGE_TAG}}"
+      registry: "ghcr-codefresh-contrib"
+      platform: 'linux/amd64,linux/arm64'
+      buildx:
+        builder:
+          driver_opts: "image=moby/buildkit:v0.14.1"
+      cache_from:
+      - ghcr.io/${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}:v2-${{CF_BRANCH_TAG_NORMALIZED_LOWER_CASE}}
+      - ghcr.io/${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}:v2-main
+      when:
+        steps:
+        - name: clone
+          on:
+          - success
+        - name: export_image_tag
+          on:
+          - success
+
+
+  create_clusters:
+      title: 'Create k3d clusters'
+      stage: test
+      type: freestyle
+      image: 'ghcr.io/k3d-io/k3d:5.5.2-dind'
+      commands:
+      - export NETWORK=$(docker network ls | grep bridge | tail -1 | awk '{print $2}')
+      - export FULL_CLUSTER_NAME_V1="k3d-test-prom-vcluster-plugin-v1"
+      - export FULL_CLUSTER_NAME_V2="k3d-test-prom-vcluster-plugin-v2"
+      - export CLUSTER_IMAGE="rancher/k3s:v1.24.4-k3s1"
+      - k3d cluster create $FULL_CLUSTER_NAME_V1 --network $NETWORK -i $CLUSTER_IMAGE --no-lb
+      - k3d cluster create $FULL_CLUSTER_NAME_V2 --network $NETWORK -i $CLUSTER_IMAGE --no-lb
+      - export CLUSTER_IP_V1=$(docker inspect k3d-$FULL_CLUSTER_NAME_V1-server-0 | jq -r '.[0].NetworkSettings.IPAddress')
+      - export CLUSTER_IP_V2=$(docker inspect k3d-$FULL_CLUSTER_NAME_V2-server-0 | jq -r '.[0].NetworkSettings.IPAddress')
+      - yq e -i '(.clusters[] | select(.name=="k3d-"+env(FULL_CLUSTER_NAME_V1)) | .cluster.server) = "https://"+env(CLUSTER_IP_V1)+":6443"' $KUBECONFIG
+      - yq e -i '(.clusters[] | select(.name=="k3d-"+env(FULL_CLUSTER_NAME_V2)) | .cluster.server) = "https://"+env(CLUSTER_IP_V2)+":6443"' $KUBECONFIG
+      - export V1_KUBE_CONTEXT=k3d-$FULL_CLUSTER_NAME_V1
+      - export V2_KUBE_CONTEXT=k3d-$FULL_CLUSTER_NAME_V2
+      - cf_export FULL_CLUSTER_NAME_V1 V1_KUBE_CONTEXT FULL_CLUSTER_NAME_V2 V2_KUBE_CONTEXT
+
+  init_test_envs:
+      stage: test
+      title: 'Init test environments'
+      image: "dtzar/helm-kubectl:3.15"
+      working_directory: '${{clone}}'
+      commands:
+      - curl -L -o vcluster "https://github.com/loft-sh/vcluster/releases/download/v0.20.0-beta.11/vcluster-linux-amd64" && chmod +x ./vcluster && mv ./vcluster /usr/local/bin/vcluster
+      - kubectl config use-context $V1_KUBE_CONTEXT
+      - v1/.e2e/scripts/init.sh "${{steps.build_v1.imageId}}"
+      - kubectl config use-context $V2_KUBE_CONTEXT
+      - v2/.e2e/scripts/init.sh "${{steps.build_v2.imageId}}"
+      when:
+        steps:
+          - name: create_clusters
+            on:
+              - success
+          - name: build_v1
+            on:
+              - success
+          - name: build_v2
+            on:
+              - success
+
+  run_chainsaw_tests:
+    stage: test
+    title: 'Run chainsaw tests'
+    image: 'ghcr.io/kyverno/chainsaw:v0.2.5'
+    working_directory: '${{clone}}'
+    commands:
+    - chainsaw test --kube-context $V1_KUBE_CONTEXT --test-file .e2e/chainsaw-tests.yaml --skip-delete
+    - chainsaw test --kube-context $V2_KUBE_CONTEXT --test-file .e2e/chainsaw-tests.yaml --skip-delete
+    when:
+      steps:
+        - name: init_test_envs
+          on:
+            - success
