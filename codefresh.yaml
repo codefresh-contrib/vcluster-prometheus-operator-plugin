@@ -13,7 +13,7 @@ stages:
 steps:
 
   preapre_env:
-    title: "Export image tag"
+    title: "Prepare variables"
     type: freestyle
     stage: prepare
     image: alpine
@@ -58,7 +58,7 @@ steps:
       builder:
         driver_opts: "image=moby/buildkit:v0.14.1"
     cache_from:
-    - ghcr.io/${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}:v1-${{CF_BRANCH_TAG_NORMALIZED_LOWER_CASE}}
+    - ghcr.io/${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}:v1-${{IMAGE_TAG}}
     - ghcr.io/${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}:v1-main
     when:
       steps:
@@ -81,7 +81,7 @@ steps:
         builder:
           driver_opts: "image=moby/buildkit:v0.14.1"
       cache_from:
-      - ghcr.io/${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}:v2-${{CF_BRANCH_TAG_NORMALIZED_LOWER_CASE}}
+      - ghcr.io/${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}:v2-${{IMAGE_TAG}}
       - ghcr.io/${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}:v2-main
       when:
         steps:
