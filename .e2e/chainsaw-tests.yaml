@@ -26,6 +26,32 @@ spec:
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
+  name: sm-without-ns-selector
+spec:
+  steps:
+  - try:
+    - assert:
+        resource:
+          apiVersion: monitoring.coreos.com/v1
+          kind: ServiceMonitor
+          metadata:
+            name: sm-without-ns-selector-x-default-x-vcluster
+            namespace: default
+          spec:
+            namespaceSelector: {}
+            selector:
+              # Resources are deployed to default namespace of vcluster
+              matchExpressions:
+              - key: vcluster.loft.sh/namespace
+                operator: In
+                values:
+                - default
+              matchLabels:
+                vcluster.loft.sh/label-vcluster-x-a172cedcae: example-app
+---
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
   name: pm-with-ns-selector
 spec:
   steps:
