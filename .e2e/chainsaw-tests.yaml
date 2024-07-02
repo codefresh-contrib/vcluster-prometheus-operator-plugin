@@ -73,3 +73,28 @@ spec:
                 - my-virtual-namespace
               matchLabels:
                 vcluster.loft.sh/label-vcluster-x-a172cedcae: example-app
+---
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: pm-without-ns-selector
+spec:
+  steps:
+  - try:
+    - assert:
+        resource:
+          apiVersion: monitoring.coreos.com/v1
+          kind: PodMonitor
+          metadata:
+            name: pm-without-ns-selector-x-default-x-vcluster
+            namespace: default
+          spec:
+            namespaceSelector: {}
+            selector:
+              matchExpressions:
+              - key: vcluster.loft.sh/namespace
+                operator: In
+                values:
+                - default
+              matchLabels:
+                vcluster.loft.sh/label-vcluster-x-a172cedcae: example-app
