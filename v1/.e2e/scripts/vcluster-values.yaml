@@ -1,0 +1,15 @@
+serviceAccount:
+  create: false
+  name: default
+vcluster:
+  image: rancher/k3s:v1.28.2-k3s1
+rbac:
+  clusterRole:
+    create: true
+  role:
+    extended: true
+syncer:
+  readinessProbe:
+    enabled: false
+  livenessProbe:
+    enabled: false
