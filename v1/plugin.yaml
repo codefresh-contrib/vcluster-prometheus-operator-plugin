@@ -2,7 +2,7 @@
 # with the other vcluster values during vcluster create or helm install.
 plugin:
   prometheus-operator-resources:
-    image: ilmedcodefreh/vcluster-prom-operator-plugin:v1-v0.1.0
+    image: ghcr.io/codefresh-contrib/vcluster-prometheus-operator-plugin:v1-main
     imagePullPolicy: IfNotPresent
     rbac:
       role:
