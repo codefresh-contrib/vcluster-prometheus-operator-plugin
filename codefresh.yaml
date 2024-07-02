@@ -5,35 +5,43 @@ version: "1.0"
 mode: parallel
 # Stages can help you organize your steps in stages
 stages:
+  - "prepare"
   - "clone"
   - "build"
   - "test"
 
 steps:
-  clone:
-    title: "Cloning repository"
-    type: "git-clone"
-    repo: "codefresh-contrib/vcluster-prometheus-operator-plugin"
-    revision: "${{CF_BRANCH}}"
-    git: "codefresh-git-integration-contrib"
-    stage: "clone"
 
-  export_image_tag:
-    title: "Export image tag"
+  preapre_env:
+    title: "Prepare variables"
     type: freestyle
-    stage: build
+    stage: prepare
     image: alpine
     commands:
     - |
       export isRelease="${{RELEASE}}"
       if [[ "$isRelease" == "true" ]]; then
         export IMAGE_TAG="${{CF_RELEASE_TAG}}"
+        export CLONE_REVISION="${{CF_RELEASE_TAG}}"
       else
         export IMAGE_TAG="${{CF_BRANCH_TAG_NORMALIZED_LOWER_CASE}}"
+        export CLONE_REVISION="${{CF_BRANCH}}"
       fi
 
-      cf_export IMAGE_TAG
+      cf_export IMAGE_TAG CLONE_REVISION
 
+  clone:
+    title: "Cloning repository"
+    type: "git-clone"
+    repo: "codefresh-contrib/vcluster-prometheus-operator-plugin"
+    revision: "${{CLONE_REVISION}}"
+    git: "codefresh-git-integration-contrib"
+    stage: "clone"
+    when:
+      steps:
+      - name: preapre_env
+        on:
+        - success
 
   build_v1:
     title: "Build v1"
@@ -50,14 +58,11 @@ steps:
       builder:
         driver_opts: "image=moby/buildkit:v0.14.1"
     cache_from:
-    - ghcr.io/${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}:v1-${{CF_BRANCH_TAG_NORMALIZED_LOWER_CASE}}
+    - ghcr.io/${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}:v1-${{IMAGE_TAG}}
     - ghcr.io/${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}:v1-main
     when:
       steps:
       - name: clone
-        on:
-        - success
-      - name: export_image_tag
         on:
         - success
 
@@ -76,7 +81,7 @@ steps:
         builder:
           driver_opts: "image=moby/buildkit:v0.14.1"
       cache_from:
-      - ghcr.io/${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}:v2-${{CF_BRANCH_TAG_NORMALIZED_LOWER_CASE}}
+      - ghcr.io/${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}:v2-${{IMAGE_TAG}}
       - ghcr.io/${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}:v2-main
       when:
         steps:
@@ -86,10 +91,6 @@ steps:
         - name: build_v1
           on:
           - success
-        - name: export_image_tag
-          on:
-          - success
-
 
   create_clusters:
       title: 'Create k3d clusters'
