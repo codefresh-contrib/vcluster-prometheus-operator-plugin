@@ -83,6 +83,9 @@ steps:
         - name: clone
           on:
           - success
+        - name: build_v1
+          on:
+          - success
         - name: export_image_tag
           on:
           - success
