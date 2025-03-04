@@ -8,9 +8,9 @@ import (
 
 type MonitorSpec struct {
 	NamespaceSelector promoperatorv1.NamespaceSelector
-	Selector metav1.LabelSelector
-	JobLabel string
-	Namespace string
+	Selector          metav1.LabelSelector
+	JobLabel          string
+	Namespace         string
 }
 
 func (s *MonitorSpec) rewriteSpec() *MonitorSpec {

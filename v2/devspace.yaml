@@ -59,7 +59,7 @@ deployments:
 dev:
   vcluster:
     imageSelector: "ghcr.io/loft-sh/vcluster-pro"
-    devImage: golang:1.22.2
+    devImage: golang:1.23.2
     workingDir: /plugins/prometheus-operator-resources
     container: syncer
     terminal:
