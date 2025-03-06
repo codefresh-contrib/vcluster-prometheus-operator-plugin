@@ -12,18 +12,18 @@ hooks:
       fi
 
 deployments:
-  prometheus-operator:
+  prometheus-operator-crds:
     helm:
       chart:
-        name: kube-prometheus-stack
+        name: prometheus-operator-crds
         repo: https://prometheus-community.github.io/helm-charts
-        version: 60.2.0
+        version: 18.0.1
   vcluster:
     helm:
       chart:
         name: vcluster
         repo: https://charts.loft.sh
-        version: v0.20.0-beta.5
+        version: v0.23.0
       values:
         controlPlane:
           advanced:
@@ -36,6 +36,13 @@ deployments:
                 enabled: false
               readinessProbe:
                 enabled: false
+            resources:
+              limits:
+                cpu: null
+                memory: 4Gi
+              requests:
+                cpu: null
+                memory: 4Gi
           distro:
             k3s:
               enabled: true
@@ -53,9 +60,9 @@ deployments:
                     verbs: ["create", "delete", "patch", "update", "get", "list", "watch"]
               clusterRole:
                 extraRules:
-                  - apiGroups: [ "apiextensions.k8s.io" ]
-                    resources: [ "customresourcedefinitions" ]
-                    verbs: [ "get", "list", "watch" ]
+                  - apiGroups: ["apiextensions.k8s.io"]
+                    resources: ["customresourcedefinitions"]
+                    verbs: ["get", "list", "watch"]
 dev:
   vcluster:
     imageSelector: "ghcr.io/loft-sh/vcluster-pro"
