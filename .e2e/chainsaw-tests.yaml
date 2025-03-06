@@ -21,7 +21,7 @@ spec:
                 values:
                 - my-virtual-namespace
               matchLabels:
-                vcluster.loft.sh/label-vcluster-x-a172cedcae: example-app
+                app: example-app
 ---
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
@@ -47,7 +47,7 @@ spec:
                 values:
                 - default
               matchLabels:
-                vcluster.loft.sh/label-vcluster-x-a172cedcae: example-app
+                app: example-app
 ---
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
@@ -72,7 +72,7 @@ spec:
                 values:
                 - my-virtual-namespace
               matchLabels:
-                vcluster.loft.sh/label-vcluster-x-a172cedcae: example-app
+                app: example-app
 ---
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
@@ -97,4 +97,4 @@ spec:
                 values:
                 - default
               matchLabels:
-                vcluster.loft.sh/label-vcluster-x-a172cedcae: example-app
+                app: example-app
