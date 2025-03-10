@@ -11,7 +11,6 @@ import (
 	"github.com/loft-sh/vcluster/pkg/syncer/synccontext"
 	"github.com/loft-sh/vcluster/pkg/syncer/translator"
 	syncertypes "github.com/loft-sh/vcluster/pkg/syncer/types"
-	"github.com/loft-sh/vcluster/pkg/util"
 	"github.com/loft-sh/vcluster/pkg/util/translate"
 	promoperatorv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -25,21 +24,10 @@ func init() {
 	_ = promoperatorv1.AddToScheme(scheme.Scheme)
 }
 
-// TODO: rewrite using v2/vendor/k8s.io/apimachinery/pkg/runtime/serializer/json/json.go
-//
-//go:embed crd-servicemonitors.yaml
-var serviceMonitorCRD string
-
 func NewServiceMonitorSyncer(ctx *synccontext.RegisterContext) (syncertypes.Base, error) {
-	CRDManifest := []byte(serviceMonitorCRD)
 	GVK := promoperatorv1.SchemeGroupVersion.WithKind("ServiceMonitor")
 
-	err := util.EnsureCRD(ctx.Context, ctx.PhysicalManager.GetConfig(), CRDManifest, GVK)
-	if err != nil {
-		return nil, err
-	}
-
-	err = util.EnsureCRD(ctx.Context, ctx.VirtualManager.GetConfig(), CRDManifest, GVK)
+	_, _, err := translate.EnsureCRDFromPhysicalCluster(ctx, ctx.PhysicalManager.GetConfig(), ctx.VirtualManager.GetConfig(), GVK)
 	if err != nil {
 		return nil, err
 	}
