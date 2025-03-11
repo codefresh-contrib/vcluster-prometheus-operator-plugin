@@ -5,10 +5,13 @@ FROM golang:1.23.2 AS builder
 WORKDIR /vcluster
 
 # Copy the Go Modules manifests
-COPY . .
+COPY go.mod go.sum ./
 
 # Install dependencies
 RUN go mod vendor
+
+# Copy the sources
+COPY main.go pkg ./
 
 # Build cmd
 RUN CGO_ENABLED=0 go build -mod vendor -o /plugin main.go

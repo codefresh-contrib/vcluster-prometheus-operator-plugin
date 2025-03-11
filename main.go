@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/codefresh-contrib/vcluster-prometheus-operator-plugin/syncers/podmonitor"
-	"github.com/codefresh-contrib/vcluster-prometheus-operator-plugin/syncers/servicemonitor"
+	"github.com/codefresh-contrib/vcluster-prometheus-operator-plugin/pkg/syncers/podmonitor"
+	"github.com/codefresh-contrib/vcluster-prometheus-operator-plugin/pkg/syncers/servicemonitor"
 	"github.com/loft-sh/vcluster-sdk/plugin"
 	"k8s.io/klog/v2"
 )
