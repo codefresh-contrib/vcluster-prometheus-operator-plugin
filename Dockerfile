@@ -14,7 +14,7 @@ RUN go mod download
 COPY main.go pkg ./
 
 # Build cmd
-RUN CGO_ENABLED=0 go build -mod vendor -o /plugin main.go
+RUN CGO_ENABLED=0 go build -o /plugin main.go
 
 # we use alpine for easier debugging
 FROM alpine
