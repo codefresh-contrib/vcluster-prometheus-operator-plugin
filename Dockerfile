@@ -1,27 +1,22 @@
+# syntax=docker.io/docker/dockerfile-upstream:1.14.1
+
 # Build the manager binary
 FROM golang:1.23.2 AS builder
-
-# Make sure we use go modules
 WORKDIR /vcluster
 
 # Copy the Go Modules manifests
-COPY go.mod go.sum ./
+COPY go.mod go.sum /vcluster/
 
 # Install dependencies
 RUN go mod download
 
 # Copy the sources
-COPY main.go pkg ./
+COPY --parents pkg main.go /vcluster/
 
-# Build cmd
+# Build plugin
 RUN CGO_ENABLED=0 go build -o /plugin main.go
 
 # we use alpine for easier debugging
 FROM alpine
-
-# Set root path as working directory
-WORKDIR /
-
-RUN mkdir -p /plugin
-
-COPY --from=builder /plugin /plugin/plugin
+WORKDIR /plugin
+COPY --from=builder /plugin .
