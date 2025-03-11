@@ -38,10 +38,8 @@ deployments:
                 enabled: false
             resources:
               limits:
-                cpu: null
                 memory: 4Gi
               requests:
-                cpu: null
                 memory: 4Gi
           distro:
             k3s:

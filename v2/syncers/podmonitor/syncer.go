@@ -17,6 +17,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/errors"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	internaltranslators "github.com/codefresh-contrib/vcluster-prometheus-operator-plugin/v2/translators"
 )
 
 func init() {
@@ -79,7 +80,7 @@ func (s *podMonitorSyncer) Sync(ctx *synccontext.SyncContext, event *synccontext
 	event.Host.Labels = translate.HostLabels(event.Virtual, event.Host)
 
 	// sync virtual to host
-	event.Host.Spec = event.Virtual.Spec
+	event.Host.Spec = *internaltranslators.TranslatePodMonitorSpec(&event.Virtual.Spec, event.Virtual.Namespace)
 
 	return ctrl.Result{}, nil
 }
