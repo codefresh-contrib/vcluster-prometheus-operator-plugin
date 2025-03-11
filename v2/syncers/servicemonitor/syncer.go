@@ -1,9 +1,9 @@
 package servicemonitor
 
 import (
-	_ "embed"
 	"fmt"
 
+	internaltranslators "github.com/codefresh-contrib/vcluster-prometheus-operator-plugin/v2/translators"
 	"github.com/loft-sh/vcluster/pkg/mappings/generic"
 	"github.com/loft-sh/vcluster/pkg/patcher"
 	"github.com/loft-sh/vcluster/pkg/scheme"
@@ -17,7 +17,6 @@ import (
 	"k8s.io/apimachinery/pkg/util/errors"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	internaltranslators "github.com/codefresh-contrib/vcluster-prometheus-operator-plugin/v2/translators"
 )
 
 func init() {
