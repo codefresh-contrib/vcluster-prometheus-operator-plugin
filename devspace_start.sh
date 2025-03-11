@@ -4,8 +4,18 @@ set +e  # Continue on errors
 COLOR_CYAN="\033[0;36m"
 COLOR_RESET="\033[0m"
 
-RUN_CMD="go run -mod vendor main.go"
-DEBUG_CMD="dlv debug ./main.go --listen=0.0.0.0:2345 --api-version=2 --output /tmp/__debug_bin --headless --build-flags=\"-mod=vendor\""
+if [ ! -f "/vcluster/syncer" ]; then
+  echo "Downloading vCluster syncer..."
+  mkdir -p /vcluster
+  curl -L -o /vcluster/syncer "https://github.com/loft-sh/vcluster/releases/download/v0.23.0/syncer-linux-$(go env GOARCH)"
+  curl -L -o /usr/local/bin/kine "https://github.com/k3s-io/kine/releases/download/v0.13.8/kine-$(go env GOARCH)"
+  chmod +x /vcluster/syncer
+  chmod +x /usr/local/bin/kine
+  echo "Successfully downloaded syncer"
+fi
+
+#RUN_CMD="go build -mod vendor -o plugin main.go && /go/bin/dlv --listen=:40000 --headless=true --api-version=2 --accept-multiclient exec /vcluster/syncer start"
+RUN_CMD="go build -mod vendor -o plugin main.go && /vcluster/syncer start"
 
 echo -e "${COLOR_CYAN}
    ____              ____
@@ -20,18 +30,10 @@ This is how you can work with it:
 - Run \`${COLOR_CYAN}${RUN_CMD}${COLOR_RESET}\` to start the plugin
 - ${COLOR_CYAN}Files will be synchronized${COLOR_RESET} between your local machine and this container
 
-If you wish to run the plugin in the debug mode with delve, run:
-  \`${COLOR_CYAN}${DEBUG_CMD}${COLOR_RESET}\`
-  Wait until the \`${COLOR_CYAN}API server listening at: [::]:2345${COLOR_RESET}\` message appears
-  Connect your debugger to localhost:2346
-  ${COLOR_CYAN}Note:${COLOR_RESET} the plugin won't start until you connect with the debugger.
-  ${COLOR_CYAN}Note:${COLOR_RESET} the plugin will be stopped once you detach your debugger session.
-
 ${COLOR_CYAN}TIP:${COLOR_RESET} hit an up arrow on your keyboard to find the commands mentioned above :)
 "
 # add useful commands to the history for convenience
 export HISTFILE=/tmp/.bash_history
-history -s $DEBUG_CMD
 history -s $RUN_CMD
 history -a
 

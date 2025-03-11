@@ -1,8 +1,7 @@
 package translators
 
 import (
-	"github.com/loft-sh/vcluster-sdk/syncer/translator"
-	"github.com/loft-sh/vcluster-sdk/translate"
+	"github.com/loft-sh/vcluster/pkg/util/translate"
 	promoperatorv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -30,7 +29,7 @@ func (s *MonitorSpec) rewriteSpec() *MonitorSpec {
 
 	// Clear namespace selector as it does not apply on host cluster
 	newSpec.NamespaceSelector = promoperatorv1.NamespaceSelector{}
-	newSpec.Selector = *translator.TranslateLabelSelector(&s.Selector)
+	newSpec.Selector = *translate.HostLabelSelector(&s.Selector)
 
 	if len(monitorNamespaces) > 0 {
 		nsExpression := metav1.LabelSelectorRequirement{Key: translate.NamespaceLabel, Operator: metav1.LabelSelectorOpIn, Values: monitorNamespaces}
@@ -39,7 +38,7 @@ func (s *MonitorSpec) rewriteSpec() *MonitorSpec {
 
 	// Translate job labels
 	if len(s.JobLabel) > 0 {
-		newSpec.JobLabel = translator.ConvertLabelKey(s.JobLabel)
+		newSpec.JobLabel = translate.HostLabel(s.JobLabel)
 	}
 
 	return newSpec

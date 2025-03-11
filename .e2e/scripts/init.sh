@@ -4,7 +4,7 @@
 PLUGIN_IMAGE=$1
 MYDIR=$(dirname $0)
 ROOT_DIR=$MYDIR/../../
-RESOURCES_FILE=$MYDIR/../../../.e2e/vcluster-resources.yaml
+RESOURCES_FILE=$MYDIR/../../.e2e/vcluster-resources.yaml
 
 kubectl apply -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.70.0/example/prometheus-operator-crd-full/monitoring.coreos.com_podmonitors.yaml
 kubectl apply -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.70.0/example/prometheus-operator-crd-full/monitoring.coreos.com_servicemonitors.yaml
