@@ -8,7 +8,7 @@ WORKDIR /vcluster
 COPY go.mod go.sum ./
 
 # Install dependencies
-RUN go mod vendor
+RUN go mod download
 
 # Copy the sources
 COPY main.go pkg ./
