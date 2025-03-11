@@ -11,7 +11,7 @@ spec:
           kind: ServiceMonitor
           metadata:
             name: sm-with-ns-selector-x-default-x-vcluster
-            namespace: default
+            namespace: vcluster
           spec:
             namespaceSelector: {}
             selector:
@@ -36,7 +36,7 @@ spec:
           kind: ServiceMonitor
           metadata:
             name: sm-without-ns-selector-x-default-x-vcluster
-            namespace: default
+            namespace: vcluster
           spec:
             namespaceSelector: {}
             selector:
@@ -62,7 +62,7 @@ spec:
           kind: PodMonitor
           metadata:
             name: pm-with-ns-selector-x-default-x-vcluster
-            namespace: default
+            namespace: vcluster
           spec:
             namespaceSelector: {}
             selector:
@@ -87,7 +87,7 @@ spec:
           kind: PodMonitor
           metadata:
             name: pm-without-ns-selector-x-default-x-vcluster
-            namespace: default
+            namespace: vcluster
           spec:
             namespaceSelector: {}
             selector:

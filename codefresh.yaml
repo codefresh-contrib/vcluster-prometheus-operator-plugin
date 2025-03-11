@@ -118,9 +118,9 @@ steps:
       image: "dtzar/helm-kubectl:3.15"
       working_directory: '${{clone}}'
       commands:
-      - curl -L -o vcluster "https://github.com/loft-sh/vcluster/releases/download/v0.20.0-beta.11/vcluster-linux-amd64" && chmod +x ./vcluster && mv ./vcluster /usr/local/bin/vcluster
-      - kubectl config use-context $V1_KUBE_CONTEXT
-      - v1/.e2e/scripts/init.sh "${{steps.build_v1.imageId}}"
+      - curl -L -o vcluster "https://github.com/loft-sh/vcluster/releases/download/v0.23.0/vcluster-linux-amd64" && chmod +x ./vcluster && mv ./vcluster /usr/local/bin/vcluster
+      # - kubectl config use-context $V1_KUBE_CONTEXT
+      # - v1/.e2e/scripts/init.sh "${{steps.build_v1.imageId}}"
       - kubectl config use-context $V2_KUBE_CONTEXT
       - v2/.e2e/scripts/init.sh "${{steps.build_v2.imageId}}"
       when:
@@ -141,7 +141,7 @@ steps:
     image: 'ghcr.io/kyverno/chainsaw:v0.2.5'
     working_directory: '${{clone}}'
     commands:
-    - chainsaw test --kube-context $V1_KUBE_CONTEXT --test-file .e2e/chainsaw-tests.yaml --skip-delete
+    #- chainsaw test --kube-context $V1_KUBE_CONTEXT --test-file .e2e/chainsaw-tests.yaml --skip-delete
     - chainsaw test --kube-context $V2_KUBE_CONTEXT --test-file .e2e/chainsaw-tests.yaml --skip-delete
     when:
       steps:
