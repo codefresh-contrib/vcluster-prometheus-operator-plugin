@@ -1,4 +1,4 @@
-module github.com/codefresh-contrib/vcluster-prometheus-operator-plugin/v2
+module github.com/codefresh-contrib/vcluster-prometheus-operator-plugin
 
 go 1.23.2
 

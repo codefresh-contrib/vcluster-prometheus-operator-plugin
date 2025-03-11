@@ -3,7 +3,7 @@ package servicemonitor
 import (
 	"fmt"
 
-	internaltranslators "github.com/codefresh-contrib/vcluster-prometheus-operator-plugin/v2/translators"
+	internaltranslators "github.com/codefresh-contrib/vcluster-prometheus-operator-plugin/translators"
 	"github.com/loft-sh/vcluster/pkg/mappings/generic"
 	"github.com/loft-sh/vcluster/pkg/patcher"
 	"github.com/loft-sh/vcluster/pkg/scheme"
