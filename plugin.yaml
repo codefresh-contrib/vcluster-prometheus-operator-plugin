@@ -2,8 +2,8 @@
 # with the other vcluster values during vcluster create or helm install.
 plugins:
   prometheus-operator-resources:
-    # Use release tag instead of main for stable revision - for example v2-v0.1.0
-    image: ghcr.io/codefresh-contrib/vcluster-prometheus-operator-plugin:v2-main
+    # Use release tag instead of main for stable revision - for example v0.2.0
+    image: ghcr.io/codefresh-contrib/vcluster-prometheus-operator-plugin:v0.2.0
     imagePullPolicy: IfNotPresent
     rbac:
       role:
