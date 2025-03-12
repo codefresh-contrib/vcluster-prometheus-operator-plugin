@@ -21,7 +21,7 @@ To use the plugin, create a new vcluster with the `plugin.yaml`:
 For more info see -https://artifacthub.io/packages/helm/prometheus-community/kube-prometheus-stack?modal=install
 
 # Create vcluster with plugin
-vcluster create my-vcluster -n my-vcluster -f https://raw.githubusercontent.com/codefresh-contrib/vcluster-prometheus-operator-plugin/main/v2/plugin.yaml
+vcluster create my-vcluster -n my-vcluster -f https://raw.githubusercontent.com/codefresh-contrib/vcluster-prometheus-operator-plugin/main/plugin.yaml
 ```
 
 This will create a new vcluster with the plugin installed. Then test the plugin with:
