@@ -23,7 +23,7 @@ deployments:
       chart:
         name: vcluster
         repo: https://charts.loft.sh
-        version: v0.23.0
+        version: v0.30.0
       values:
         controlPlane:
           advanced:
@@ -64,7 +64,7 @@ deployments:
 dev:
   vcluster:
     imageSelector: "ghcr.io/loft-sh/vcluster-pro"
-    devImage: golang:1.23.2
+    devImage: golang:1.25.3
     workingDir: /plugins/prometheus-operator-resources
     container: syncer
     terminal:

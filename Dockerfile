@@ -1,7 +1,7 @@
 # syntax=docker.io/docker/dockerfile-upstream:1.14.1-labs
 
 # Build the manager binary
-FROM golang:1.23.2 AS builder
+FROM golang:1.25.3 AS builder
 WORKDIR /vcluster
 
 # Copy the Go Modules manifests
