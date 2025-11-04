@@ -6,7 +6,7 @@ This repository contains a [vCluster plugin](https://www.vcluster.com/docs/v0.19
 
 Currently only the very basic functionality is implemented so the plugin only supports syncing of `PodMonitor` and `ServiceMonitor` resources. This is to allow scraping of metrics from workloads running on virtual clusters from a signle Prometheus or Open Telemetry collector on the host (with [target allocator](https://github.com/open-telemetry/opentelemetry-operator/blob/main/cmd/otel-allocator/README.md) that supports Prometheus operator CRDs).
 
-This plugin is compatibe with vCluster version `0.21.0` and above, tested on `v0.30.0`, which was latest at the time of writing this plugin.
+This plugin in it's latest version is compatibe with vCluster version `0.30.0`
 
 # Development
 
