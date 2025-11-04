@@ -28,7 +28,7 @@ func init() {
 func NewPodMonitorSyncer(ctx *synccontext.RegisterContext) (syncertypes.Base, error) {
 	GVK := promoperatorv1.SchemeGroupVersion.WithKind("PodMonitor")
 
-	_, _, err := translate.EnsureCRDFromPhysicalCluster(ctx, ctx.PhysicalManager.GetConfig(), ctx.VirtualManager.GetConfig(), GVK)
+	_, _, err := translate.EnsureCRDFromPhysicalCluster(ctx, ctx.HostManager.GetConfig(), ctx.VirtualManager.GetConfig(), GVK)
 	if err != nil {
 		return nil, err
 	}

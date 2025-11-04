@@ -87,7 +87,7 @@ steps:
       image: "dtzar/helm-kubectl:3.15"
       working_directory: '${{clone}}'
       commands:
-      - curl -L -o vcluster "https://github.com/loft-sh/vcluster/releases/download/v0.23.0/vcluster-linux-amd64" && chmod +x ./vcluster && mv ./vcluster /usr/local/bin/vcluster
+      - curl -L -o vcluster "https://github.com/loft-sh/vcluster/releases/download/v0.30.0/vcluster-linux-amd64" && chmod +x ./vcluster && mv ./vcluster /usr/local/bin/vcluster
       - kubectl config use-context $KUBE_CONTEXT
       - .e2e/scripts/init.sh "${{steps.build.imageId}}"
       when:
